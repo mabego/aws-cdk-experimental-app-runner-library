@@ -6,21 +6,12 @@ const certRecordType: string = "CNAME";
 const certRecordTTL: number = 300;
 const changeAction: string = "UPSERT";
 
-const addCustomDomain = (subdomain: string, serviceArn: string) =>
+const describeCustomDomain = (serviceArn: string) =>
   apprunner
-    .associateCustomDomain({
-      DomainName: subdomain,
-      ServiceArn: serviceArn,
-      EnableWWWSubdomain: false,
+    .describeCustomDomains({
+      ServiceArn: serviceArn
     })
     .promise();
-
-const removeCustomDomain = (subdomain: string, serviceArn: string) =>
-  apprunner
-    .disassociateCustomDomain({
-      DomainName: subdomain,
-      ServiceArn: serviceArn,
-    });
 
 const updateRecord = (hostedZoneId: string, name: string, value: string) =>
   route53
@@ -34,22 +25,27 @@ const updateRecord = (hostedZoneId: string, name: string, value: string) =>
               Name: name,
               Type: certRecordType,
               TTL: certRecordTTL,
-              ResourceRecords: [{ Value: value }],
-            },
-          },
-        ],
-      },
+              ResourceRecords: [{ Value: value }]
+            }
+          }
+        ]
+      }
     })
     .promise();
 
 export async function handler(event: any): Promise<any> {
-  const { hostedZoneId, subdomain, serviceArn } = event.ResourceProperties;
+  const { hostedZoneId, serviceArn } = event.ResourceProperties;
 
   if (event.RequestType === "Delete") {
-    removeCustomDomain(subdomain, serviceArn);
     return;
   }
 
-  const domain = await addCustomDomain(subdomain, serviceArn);
-  await updateRecord(hostedZoneId, subdomain, domain.DNSTarget);
+  const customDomain = await describeCustomDomain(serviceArn);
+  const records = customDomain.CustomDomains.find(Boolean)?.CertificateValidationRecords;
+
+  if (records != undefined) {
+    for (const record of records) {
+      await updateRecord(hostedZoneId, record.Name as string, record.Value as string);
+    }
+  }
 }

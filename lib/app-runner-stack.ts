@@ -71,6 +71,7 @@ export class AppRunnerStack extends Stack {
               actions: [
                 "apprunner:AssociateCustomDomain",
                 "apprunner:DisassociateCustomDomain",
+                "route53:changeResourceRecordSets",
               ],
               resources: ["*"],
             }),
