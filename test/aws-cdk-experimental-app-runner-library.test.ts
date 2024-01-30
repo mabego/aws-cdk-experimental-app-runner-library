@@ -1,9 +1,9 @@
 // import * as cdk from 'aws-cdk-lib';
 // import { Template } from 'aws-cdk-lib/assertions';
-// import * as AwsCdkExperimentalAppRunnerLibrary from '../lib/aws-cdk-experimental-app-runner-library-stack';
+// import * as AwsCdkExperimentalAppRunnerLibrary from '../lib/experimental-app-runner-library-stack';
 
 // example test. To run these tests, uncomment this file along with the
-// example resource in lib/aws-cdk-experimental-app-runner-library-stack.ts
+// example resource in lib/experimental-app-runner-library-stack.ts
 test('SQS Queue Created', () => {
 //   const app = new cdk.App();
 //     // WHEN
