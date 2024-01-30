@@ -1,8 +1,8 @@
 {
-  "name": "aws-cdk-experimental-app-runner-library",
+  "name": "experimental-app-runner-library",
   "version": "0.1.0",
   "bin": {
-    "aws-cdk-experimental-app-runner-library": "bin/aws-cdk-experimental-app-runner-library.js"
+    "experimental-app-runner-library": "bin/experimental-app-runner-library.js"
   },
   "scripts": {
     "build": "tsc",
@@ -11,9 +11,11 @@
     "cdk": "cdk"
   },
   "devDependencies": {
+    "@aws-cdk/aws-apprunner-alpha": "^2.124.0-alpha.0",
     "@types/jest": "^29.5.11",
     "@types/node": "20.11.10",
     "aws-cdk": "2.124.0",
+    "aws-sdk": "^2.1546.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
