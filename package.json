@@ -2,7 +2,7 @@
   "name": "experimental-app-runner-library",
   "version": "0.1.0",
   "bin": {
-    "aws-cdk-experimental-app-runner-library": "bin/experimental-app-runner-library.js"
+    "experimental-app-runner-library": "bin/experimental-app-runner-library.js"
   },
   "scripts": {
     "build": "tsc",
