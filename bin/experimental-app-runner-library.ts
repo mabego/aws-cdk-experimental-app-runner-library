@@ -18,7 +18,7 @@ const dnsStackDelete = new DnsStackDelete(app, "DnsStackDelete", {
 dnsStackDelete.addDependency(dnsStack);
 
 const vpcStack = new VPCStack(app, "VPCStack", {
-  maxAzs: 2,
+  maxAzs: 3,
 });
 
 const rdsStack = new RdsServerlessStack(app, "RDSStack", {

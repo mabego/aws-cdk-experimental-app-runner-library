@@ -13,18 +13,13 @@ export class VPCStack extends Stack {
     super(scope, id, props);
 
     if (props.maxAzs !== undefined && props.maxAzs <= 1) {
-      throw new Error("maxAzs must be at least 2.");
+      throw new Error("maxAzs must be at least 3.");
     }
 
     this.vpc = new Vpc(this, "appRunnerVPC", {
       ipAddresses: IpAddresses.cidr("10.0.0.0/16"),
       natGateways: 0,
       subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: "public",
-          subnetType: SubnetType.PUBLIC,
-        },
         {
           cidrMask: 24,
           name: "private",
