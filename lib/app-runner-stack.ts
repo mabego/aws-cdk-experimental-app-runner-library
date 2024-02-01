@@ -8,7 +8,7 @@ import {
   StackProps,
 } from "aws-cdk-lib";
 import { ISecret } from "aws-cdk-lib/aws-secretsmanager";
-import { SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
@@ -31,7 +31,7 @@ export class AppRunnerStack extends Stack {
 
     const vpcConnector = new AppRunnerAlpha.VpcConnector(this, "VpcConnector", {
       vpc: props.vpc,
-      vpcSubnets: props.vpc.selectSubnets({ subnetType: SubnetType.PUBLIC }),
+      vpcSubnets: props.vpc.selectSubnets({ onePerAz: true }),
       vpcConnectorName: "VpcConnector",
     });
 
