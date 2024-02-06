@@ -45,7 +45,7 @@ export class DnsStack extends Stack {
       serviceToken: provider.serviceToken,
       properties: {
         domain,
-        nameServers: Fn.join(",", hostedZone.hostedZoneNameServers as string[]),
+        nameServers: Fn.join(",", hostedZone.hostedZoneNameServers!),
       },
     });
   }
