@@ -1,15 +1,15 @@
 import * as AppRunnerAlpha from "@aws-cdk/aws-apprunner-alpha";
 import {
-  App,
+  type App,
   aws_lambda_nodejs,
   custom_resources,
   CustomResource,
   Stack,
-  StackProps,
+  type StackProps,
 } from "aws-cdk-lib";
-import { ISecret } from "aws-cdk-lib/aws-secretsmanager";
-import { Vpc } from "aws-cdk-lib/aws-ec2";
-import { HostedZone } from "aws-cdk-lib/aws-route53";
+import { type ISecret } from "aws-cdk-lib/aws-secretsmanager";
+import { type Vpc } from "aws-cdk-lib/aws-ec2";
+import { type HostedZone } from "aws-cdk-lib/aws-route53";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface AppRunnerStackProps extends StackProps {
@@ -48,10 +48,10 @@ export class AppRunnerStack extends Stack {
           startCommand: "./web",
         },
         connection: AppRunnerAlpha.GitHubConnection.fromConnectionArn(
-          `${process.env.CONNECTION || ""}`,
+          `${process.env.CONNECTION ?? ""}`
         ),
-        repositoryUrl: repositoryUrl,
-        branch: branch,
+        repositoryUrl,
+        branch,
       }),
       autoDeploymentsEnabled: true, // Enables continuous integration for the App Runner service
       vpcConnector,
@@ -60,7 +60,11 @@ export class AppRunnerStack extends Stack {
     this.customDomain(subDomain, this.serv.serviceArn, props.hostedZone);
   }
 
-  customDomain(subdomain: string, serviceArn: string, hostedZone: HostedZone) {
+  customDomain(
+    subdomain: string,
+    serviceArn: string,
+    hostedZone: HostedZone
+  ): void {
     const provider = new custom_resources.Provider(this, "Provider", {
       onEventHandler: new aws_lambda_nodejs.NodejsFunction(
         this,
@@ -76,10 +80,10 @@ export class AppRunnerStack extends Stack {
               resources: ["*"],
             }),
           ],
-        },
+        }
       ),
     });
-    new CustomResource(this, "CustomResource", {
+    void new CustomResource(this, "CustomResource", {
       serviceToken: provider.serviceToken,
       properties: {
         subdomain,

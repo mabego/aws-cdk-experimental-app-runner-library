@@ -1,12 +1,19 @@
-import { Route53 } from "aws-sdk";
+import { type AWSError, Route53 } from "aws-sdk";
+import { type PromiseResult } from "aws-sdk/lib/request";
 
 const route53 = new Route53({ region: "us-east-1" });
 const certRecordType: string = "CNAME";
 const certRecordTTL: number = 300;
 const changeAction: string = "DELETE";
 
-const deleteRecord = (hostedZoneId: string, name: string, value: string) =>
-  route53
+const deleteRecord = async (
+  hostedZoneId: string,
+  name: string,
+  value: string
+): Promise<
+  PromiseResult<Route53.Types.ChangeResourceRecordSetsResponse, AWSError>
+> =>
+  await route53
     .changeResourceRecordSets({
       HostedZoneId: hostedZoneId,
       ChangeBatch: {
@@ -25,8 +32,14 @@ const deleteRecord = (hostedZoneId: string, name: string, value: string) =>
     })
     .promise();
 
-const listResourceRecordSets = (hostedZoneId: string) =>
-  route53.listResourceRecordSets({ HostedZoneId: hostedZoneId }).promise();
+const listResourceRecordSets = async (
+  hostedZoneId: string
+): Promise<
+  PromiseResult<Route53.Types.ListResourceRecordSetsResponse, AWSError>
+> =>
+  await route53
+    .listResourceRecordSets({ HostedZoneId: hostedZoneId })
+    .promise();
 
 export async function handler(event: any): Promise<any> {
   const { hostedZoneId } = event.ResourceProperties;
@@ -42,12 +55,12 @@ export async function handler(event: any): Promise<any> {
   }
 
   for (const record of records?.ResourceRecordSets?.filter(
-    (r) => r.Type === certRecordType,
+    (r) => r.Type === certRecordType
   )) {
     await deleteRecord(
       hostedZoneId,
       record.Name,
-      record.ResourceRecords?.find(Boolean)?.Value as string,
+      record.ResourceRecords?.find(Boolean)?.Value!
     );
   }
 }

@@ -1,4 +1,5 @@
-import { AppRunner, Route53 } from "aws-sdk";
+import { AppRunner, type AWSError, Route53 } from "aws-sdk";
+import { type PromiseResult } from "aws-sdk/lib/request";
 
 const apprunner = new AppRunner();
 const route53 = new Route53({ region: "us-east-1" });
@@ -6,15 +7,23 @@ const certRecordType: string = "CNAME";
 const certRecordTTL: number = 300;
 const changeAction: string = "UPSERT";
 
-const describeCustomDomain = (serviceArn: string) =>
-  apprunner
+const describeCustomDomain = async (
+  serviceArn: string
+): Promise<
+  PromiseResult<AppRunner.Types.DescribeCustomDomainsResponse, AWSError>
+> =>
+  await apprunner
     .describeCustomDomains({
-      ServiceArn: serviceArn
+      ServiceArn: serviceArn,
     })
     .promise();
 
-const updateRecord = (hostedZoneId: string, name: string, value: string) =>
-  route53
+const updateRecord = async (
+  hostedZoneId: string,
+  name: string,
+  value: string
+): Promise<Route53.Types.ChangeResourceRecordSetsResponse> =>
+  await route53
     .changeResourceRecordSets({
       HostedZoneId: hostedZoneId,
       ChangeBatch: {
@@ -25,11 +34,11 @@ const updateRecord = (hostedZoneId: string, name: string, value: string) =>
               Name: name,
               Type: certRecordType,
               TTL: certRecordTTL,
-              ResourceRecords: [{ Value: value }]
-            }
-          }
-        ]
-      }
+              ResourceRecords: [{ Value: value }],
+            },
+          },
+        ],
+      },
     })
     .promise();
 
@@ -41,11 +50,12 @@ export async function handler(event: any): Promise<any> {
   }
 
   const customDomain = await describeCustomDomain(serviceArn);
-  const records = customDomain.CustomDomains.find(Boolean)?.CertificateValidationRecords;
+  const records =
+    customDomain.CustomDomains.find(Boolean)?.CertificateValidationRecords;
 
-  if (records != undefined) {
+  if (records !== undefined) {
     for (const record of records) {
-      await updateRecord(hostedZoneId, record.Name as string, record.Value as string);
+      await updateRecord(hostedZoneId, record.Name!, record.Value!);
     }
   }
 }
