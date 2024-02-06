@@ -1,4 +1,5 @@
-import { AppRunner, Route53 } from "aws-sdk";
+import { AppRunner, type AWSError, Route53 } from "aws-sdk";
+import { type PromiseResult } from "aws-sdk/lib/request";
 
 const apprunner = new AppRunner();
 const route53 = new Route53({ region: "us-east-1" });
@@ -6,8 +7,13 @@ const certRecordType: string = "CNAME";
 const certRecordTTL: number = 300;
 const changeAction: string = "UPSERT";
 
-const addCustomDomain = (subdomain: string, serviceArn: string) =>
-  apprunner
+const addCustomDomain = async (
+  subdomain: string,
+  serviceArn: string
+): Promise<
+  PromiseResult<AppRunner.Types.AssociateCustomDomainResponse, AWSError>
+> =>
+  await apprunner
     .associateCustomDomain({
       DomainName: subdomain,
       ServiceArn: serviceArn,
@@ -15,15 +21,21 @@ const addCustomDomain = (subdomain: string, serviceArn: string) =>
     })
     .promise();
 
-const removeCustomDomain = (subdomain: string, serviceArn: string) =>
-  apprunner
-    .disassociateCustomDomain({
-      DomainName: subdomain,
-      ServiceArn: serviceArn,
-    });
+const removeCustomDomain = (
+  subdomain: string,
+  serviceArn: string
+): Request<AppRunner.DisassociateCustomDomainResponse, AWSError> =>
+  apprunner.disassociateCustomDomain({
+    DomainName: subdomain,
+    ServiceArn: serviceArn,
+  });
 
-const updateRecord = (hostedZoneId: string, name: string, value: string) =>
-  route53
+const updateRecord = async (
+  hostedZoneId: string,
+  name: string,
+  value: string
+): Promise<Route53.Types.ChangeResourceRecordSetsResponse> =>
+  await route53
     .changeResourceRecordSets({
       HostedZoneId: hostedZoneId,
       ChangeBatch: {

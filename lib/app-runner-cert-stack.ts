@@ -1,13 +1,13 @@
-import * as AppRunnerAlpha from "@aws-cdk/aws-apprunner-alpha";
+import type * as AppRunnerAlpha from "@aws-cdk/aws-apprunner-alpha";
 import {
-  App,
+  type App,
   aws_lambda_nodejs,
   custom_resources,
   CustomResource,
   Stack,
-  StackProps,
+  type StackProps,
 } from "aws-cdk-lib";
-import { HostedZone } from "aws-cdk-lib/aws-route53";
+import { type HostedZone } from "aws-cdk-lib/aws-route53";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface AppRunnerCertStackProps extends StackProps {
@@ -27,8 +27,8 @@ export class AppRunnerCertStack extends Stack {
   certValidation(
     subdomain: string,
     service: AppRunnerAlpha.Service,
-    hostedZone: HostedZone,
-  ) {
+    hostedZone: HostedZone
+  ): void {
     const provider = new custom_resources.Provider(this, "Provider", {
       onEventHandler: new aws_lambda_nodejs.NodejsFunction(
         this,
@@ -43,10 +43,10 @@ export class AppRunnerCertStack extends Stack {
               resources: ["*"],
             }),
           ],
-        },
+        }
       ),
     });
-    new CustomResource(this, "CustomResource", {
+    void new CustomResource(this, "CustomResource", {
       serviceToken: provider.serviceToken,
       properties: {
         subdomain,

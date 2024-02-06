@@ -22,7 +22,7 @@ const vpcStack = new VPCStack(app, "VPCStack", {
 });
 
 const rdsStack = new RdsServerlessStack(app, "RDSStack", {
-  vpc: vpcStack.vpc
+  vpc: vpcStack.vpc,
 });
 
 rdsStack.addDependency(vpcStack);
@@ -35,7 +35,7 @@ const appRunnerStack = new AppRunnerStack(app, "AppRunnerStack", {
 
 appRunnerStack.addDependency(rdsStack);
 
-new AppRunnerCertStack(app, "AppRunnerCertStack", {
+void new AppRunnerCertStack(app, "AppRunnerCertStack", {
   hostedZone: dnsStack.hostedZone,
   serv: appRunnerStack.serv,
 });
