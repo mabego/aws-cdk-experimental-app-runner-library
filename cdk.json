@@ -61,7 +61,7 @@
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "rootDomain": "colawarrior.com",
-    "subDomain": "test51.colawarrior.com",
+    "subDomain": "test207.colawarrior.com",
     "dbName": "snippetbox",
     "dbUser": "web",
     "dbPort": 3306,

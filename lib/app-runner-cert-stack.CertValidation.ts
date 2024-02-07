@@ -8,10 +8,8 @@ const certRecordTTL: number = 300;
 const changeAction: string = "UPSERT";
 
 const describeCustomDomain = async (
-  serviceArn: string
-): Promise<
-  PromiseResult<AppRunner.Types.DescribeCustomDomainsResponse, AWSError>
-> =>
+  serviceArn: string,
+): Promise<PromiseResult<AppRunner.Types.DescribeCustomDomainsResponse, AWSError>> =>
   await apprunner
     .describeCustomDomains({
       ServiceArn: serviceArn,
@@ -21,7 +19,7 @@ const describeCustomDomain = async (
 const updateRecord = async (
   hostedZoneId: string,
   name: string,
-  value: string
+  value: string,
 ): Promise<Route53.Types.ChangeResourceRecordSetsResponse> =>
   await route53
     .changeResourceRecordSets({
@@ -50,8 +48,7 @@ export async function handler(event: any): Promise<any> {
   }
 
   const customDomain = await describeCustomDomain(serviceArn);
-  const records =
-    customDomain.CustomDomains.find(Boolean)?.CertificateValidationRecords;
+  const records = customDomain.CustomDomains.find(Boolean)?.CertificateValidationRecords;
 
   if (records !== undefined) {
     for (const record of records) {
