@@ -24,27 +24,16 @@ export class AppRunnerCertStack extends Stack {
     this.certValidation(subDomain, props.serv, props.hostedZone);
   }
 
-  certValidation(
-    subdomain: string,
-    service: AppRunnerAlpha.Service,
-    hostedZone: HostedZone
-  ): void {
+  certValidation(subdomain: string, service: AppRunnerAlpha.Service, hostedZone: HostedZone): void {
     const provider = new custom_resources.Provider(this, "Provider", {
-      onEventHandler: new aws_lambda_nodejs.NodejsFunction(
-        this,
-        "CertValidation",
-        {
-          initialPolicy: [
-            new PolicyStatement({
-              actions: [
-                "route53:changeResourceRecordSets",
-                "apprunner:DescribeCustomDomains",
-              ],
-              resources: ["*"],
-            }),
-          ],
-        }
-      ),
+      onEventHandler: new aws_lambda_nodejs.NodejsFunction(this, "CertValidation", {
+        initialPolicy: [
+          new PolicyStatement({
+            actions: ["route53:changeResourceRecordSets", "apprunner:DescribeCustomDomains"],
+            resources: ["*"],
+          }),
+        ],
+      }),
     });
     void new CustomResource(this, "CustomResource", {
       serviceToken: provider.serviceToken,

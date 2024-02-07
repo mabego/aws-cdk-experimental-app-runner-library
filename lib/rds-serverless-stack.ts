@@ -52,26 +52,22 @@ export class RdsServerlessStack extends Stack {
       },
     });
 
-    const mysqlRdsServerless = new ServerlessCluster(
-      this,
-      "mysqlRdsServerless",
-      {
-        engine: DatabaseClusterEngine.auroraMysql({
-          version: AuroraMysqlEngineVersion.VER_2_11_3,
-        }),
-        parameterGroup,
-        vpc: props.vpc,
-        vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-        credentials: Credentials.fromSecret(this.dbSecret, dbUser),
-        scaling: {
-          minCapacity: AuroraCapacityUnit.ACU_1,
-          maxCapacity: AuroraCapacityUnit.ACU_1,
-        },
-        defaultDatabaseName: dbName,
-        deletionProtection: false,
-        removalPolicy: RemovalPolicy.DESTROY,
-      }
-    );
+    const mysqlRdsServerless = new ServerlessCluster(this, "mysqlRdsServerless", {
+      engine: DatabaseClusterEngine.auroraMysql({
+        version: AuroraMysqlEngineVersion.VER_2_11_3,
+      }),
+      parameterGroup,
+      vpc: props.vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      credentials: Credentials.fromSecret(this.dbSecret, dbUser),
+      scaling: {
+        minCapacity: AuroraCapacityUnit.ACU_1,
+        maxCapacity: AuroraCapacityUnit.ACU_1,
+      },
+      defaultDatabaseName: dbName,
+      deletionProtection: false,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
     mysqlRdsServerless.connections.allowFromAnyIpv4(Port.tcp(dbPort));
   }

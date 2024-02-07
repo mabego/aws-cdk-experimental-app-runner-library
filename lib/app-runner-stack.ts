@@ -48,7 +48,7 @@ export class AppRunnerStack extends Stack {
           startCommand: "./web",
         },
         connection: AppRunnerAlpha.GitHubConnection.fromConnectionArn(
-          `${process.env.CONNECTION ?? ""}`
+          `${process.env.CONNECTION ?? ""}`,
         ),
         repositoryUrl,
         branch,
@@ -60,28 +60,20 @@ export class AppRunnerStack extends Stack {
     this.customDomain(subDomain, this.serv.serviceArn, props.hostedZone);
   }
 
-  customDomain(
-    subdomain: string,
-    serviceArn: string,
-    hostedZone: HostedZone
-  ): void {
+  customDomain(subdomain: string, serviceArn: string, hostedZone: HostedZone): void {
     const provider = new custom_resources.Provider(this, "Provider", {
-      onEventHandler: new aws_lambda_nodejs.NodejsFunction(
-        this,
-        "CustomDomain",
-        {
-          initialPolicy: [
-            new PolicyStatement({
-              actions: [
-                "apprunner:AssociateCustomDomain",
-                "apprunner:DisassociateCustomDomain",
-                "route53:changeResourceRecordSets",
-              ],
-              resources: ["*"],
-            }),
-          ],
-        }
-      ),
+      onEventHandler: new aws_lambda_nodejs.NodejsFunction(this, "CustomDomain", {
+        initialPolicy: [
+          new PolicyStatement({
+            actions: [
+              "apprunner:AssociateCustomDomain",
+              "apprunner:DisassociateCustomDomain",
+              "route53:changeResourceRecordSets",
+            ],
+            resources: ["*"],
+          }),
+        ],
+      }),
     });
     void new CustomResource(this, "CustomResource", {
       serviceToken: provider.serviceToken,
